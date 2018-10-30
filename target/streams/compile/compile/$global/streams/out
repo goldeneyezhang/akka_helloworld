@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mE:\scala\akka-quickstart-scala\src\main\scala\com\example\AkkaQuickstart.scala:146:22: stable identifier required, but BetterMaster.this.talker found.[0m
-[0m[[0m[31merror[0m] [0m[0m     case Terminated(`talker`) => context.system.terminate()[0m
-[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0mE:\scala\akka-quickstart-scala\src\main\scala\com\example\AkkaQuickstart.scala:102:7: system is already defined as value system[0m
+[0m[[0m[31merror[0m] [0m[0m  val system = ActorSystem("testSystem")[0m
+[0m[[0m[31merror[0m] [0m[0m      ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

@@ -98,6 +98,11 @@ object AkkaQuickstart extends App {
   
   // Better Greet
   system.actorOf(Props[BetterMaster], "master")
+  // Print Ref
+  val systemRef = ActorSystem("testSystem")
+  val firstRef = systemRef.actorOf(Props[PrintMyActorRefActor],"first-actor")
+  println(s"First: $firstRef")
+  firstRef ! "printit"
 }
 //#main-class
 //#full-example
@@ -145,5 +150,14 @@ class BetterMaster extends Actor {
   def receive = {
      case Terminated(`talker`) => context.system.terminate()
   }
+}
+
+// print ref
+class PrintMyActorRefActor extends Actor {
+    override def receive: Receive = {
+      case "printit" =>
+        val secondRef = context.actorOf(Props.empty, "second-actor")
+        println(s"Second: $secondRef")
+    }
 }
 
