@@ -1,7 +1,7 @@
 //#full-example
 package com.example
 
-import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props }
+import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props, PoisonPill, Terminated }
 
 //#greeter-companion
 //#greeter-messages
@@ -88,6 +88,62 @@ object AkkaQuickstart extends App {
   goodDayGreeter ! WhoToGreet("Play")
   goodDayGreeter ! Greet
   //#main-send-messages
+
+  // Hello World Simple
+  val talker = system.actorOf(Props[SimpleTalker],"talker")
+  // 发送三条消息
+  talker ! SimpleGreet("Dante")
+  talker ! SimplePraise("Winston")
+  talker ! SimpleCelebrate("clare",18)
+  
+  // Better Greet
+  system.actorOf(Props[BetterMaster], "master")
 }
 //#main-class
 //#full-example
+
+// Hello World Simple
+case class SimpleGreet(name: String)
+case class SimplePraise(name: String)
+case class SimpleCelebrate(name: String, age: Int)
+
+class SimpleTalker extends Actor {
+  def receive = {
+    case SimpleGreet(name) => println(s"Hello $name")
+    case SimplePraise(name) => println(s"$name,you're amazing")
+    case SimpleCelebrate(name, age) => println(s"Here's to another $age years, $name")
+  }
+}
+
+// Better World Simple
+case class BetterGreet(name: String)
+case class BetterPraise(name: String)
+case class BetterCelebrate(name: String, age: Int)
+
+class BetterTalker extends Actor {
+  def receive() = {
+    case BetterGreet(name) => println(s"Hello1 $name")
+    case BetterPraise(name) => println(s"$name, you're amazing1")
+    case BetterCelebrate(name: String, age: Int) => println(s"Here's to another $age years1, $name")
+  }
+}
+
+class BetterMaster extends Actor {
+  val talker = context.actorOf(Props[BetterTalker], "talker")
+  
+  override def preStart {
+    context.watch(talker)
+    
+    talker ! BetterGreet("Dante")
+    talker ! BetterPraise("Winston")
+    talker ! BetterCelebrate("Clare" ,16)
+    //发送一个毒丸，告诉actor已经结束了。因此后面发送的消息将不会被传递
+    talker ! PoisonPill
+    talker ! BetterGreet("Dante")
+  }
+
+  def receive = {
+     case Terminated(`talker`) => context.system.terminate()
+  }
+}
+
